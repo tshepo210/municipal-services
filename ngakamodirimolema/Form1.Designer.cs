@@ -78,6 +78,7 @@
             btnLocalEvents.TabIndex = 4;
             btnLocalEvents.Text = "Local Events and Announcements";
             btnLocalEvents.UseVisualStyleBackColor = true;
+            btnLocalEvents.Enabled = false;
             // 
             // btnServiceRequestStatus
             // 
@@ -91,6 +92,7 @@
             btnServiceRequestStatus.TabIndex = 3;
             btnServiceRequestStatus.Text = "Service Request Status";
             btnServiceRequestStatus.UseVisualStyleBackColor = true;
+            btnServiceRequestStatus.Enabled = false;
             // 
             // logoPanel
             // 

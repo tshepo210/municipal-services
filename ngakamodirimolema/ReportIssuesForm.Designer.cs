@@ -42,18 +42,16 @@ namespace ngakamodirimolema
             openFileDialog1.Multiselect = false;
             timerSubmission = new System.Windows.Forms.Timer(components);
             SuspendLayout();
-            // 
+
             // txtLocation
-            // 
             txtLocation.Location = new System.Drawing.Point(20, 40);
             txtLocation.Name = "txtLocation";
             txtLocation.PlaceholderText = "Enter location";
             txtLocation.Size = new System.Drawing.Size(360, 23);
             txtLocation.TabIndex = 0;
             txtLocation.TextChanged += txtLocation_TextChanged;
-            // 
+
             // cmbCategory
-            // 
             cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbCategory.Items.AddRange(new object[] { "Select category...", "Road", "Water", "Electricity", "Sanitation", "Other" });
             cmbCategory.SelectedIndex = 0;
@@ -62,9 +60,8 @@ namespace ngakamodirimolema
             cmbCategory.Size = new System.Drawing.Size(200, 23);
             cmbCategory.TabIndex = 1;
             cmbCategory.SelectedIndexChanged += cmbCategory_SelectedIndexChanged;
-            // 
+
             // rtbDescription
-            // 
             rtbDescription.Location = new System.Drawing.Point(20, 150);
             rtbDescription.Name = "rtbDescription";
             rtbDescription.Size = new System.Drawing.Size(360, 120);
@@ -74,9 +71,8 @@ namespace ngakamodirimolema
             rtbDescription.Enter += rtbDescription_Enter;
             rtbDescription.Leave += rtbDescription_Leave;
             rtbDescription.TextChanged += rtbDescription_TextChanged;
-            // 
+
             // btnAttach
-            // 
             btnAttach.Location = new System.Drawing.Point(20, 290);
             btnAttach.Name = "btnAttach";
             btnAttach.Size = new System.Drawing.Size(120, 30);
@@ -84,16 +80,14 @@ namespace ngakamodirimolema
             btnAttach.Text = "Attach image/document";
             btnAttach.UseVisualStyleBackColor = true;
             btnAttach.Click += btnAttach_Click;
-            // 
+
             // lblAttachment
-            // 
             lblAttachment.Location = new System.Drawing.Point(150, 295);
             lblAttachment.Name = "lblAttachment";
             lblAttachment.Size = new System.Drawing.Size(230, 23);
             lblAttachment.Text = "No file attached";
-            // 
+
             // btnSubmit
-            // 
             btnSubmit.Location = new System.Drawing.Point(20, 340);
             btnSubmit.Name = "btnSubmit";
             btnSubmit.Size = new System.Drawing.Size(120, 30);
@@ -102,16 +96,14 @@ namespace ngakamodirimolema
             btnSubmit.UseVisualStyleBackColor = true;
             btnSubmit.Click += btnSubmit_Click;
             btnSubmit.Enabled = false;
-            // 
+
             // progressBarEngagement
-            // 
             progressBarEngagement.Location = new System.Drawing.Point(20, 390);
             progressBarEngagement.Name = "progressBarEngagement";
             progressBarEngagement.Size = new System.Drawing.Size(360, 20);
             progressBarEngagement.TabIndex = 5;
-            // 
+
             // btnBack
-            // 
             btnBack.Location = new System.Drawing.Point(260, 340);
             btnBack.Name = "btnBack";
             btnBack.Size = new System.Drawing.Size(120, 30);
@@ -119,14 +111,12 @@ namespace ngakamodirimolema
             btnBack.Text = "Back to Main Menu";
             btnBack.UseVisualStyleBackColor = true;
             btnBack.Click += btnBack_Click;
-            // 
+
             // timerSubmission
-            // 
             timerSubmission.Interval = 100;
             timerSubmission.Tick += timerSubmission_Tick;
-            // 
+
             // ReportIssuesForm
-            // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(400, 430);

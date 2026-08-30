@@ -1,6 +1,6 @@
 using System;
-using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ngakamodirimolema
@@ -8,6 +8,7 @@ namespace ngakamodirimolema
     public partial class ReportIssuesForm : Form
     {
         private readonly string _descriptionPlaceholder = "Description";
+        private string? _attachmentPath;
 
         public ReportIssuesForm()
         {
@@ -23,7 +24,8 @@ namespace ngakamodirimolema
                 var allowed = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx" };
                 if (ext != null && Array.IndexOf(allowed, ext) >= 0)
                 {
-                    lblAttachment.Text = Path.GetFileName(openFileDialog1.FileName);
+                    _attachmentPath = openFileDialog1.FileName;
+                    lblAttachment.Text = Path.GetFileName(_attachmentPath);
                 }
                 else
                 {
@@ -107,8 +109,31 @@ namespace ngakamodirimolema
             else
             {
                 timerSubmission.Stop();
+                // save the report in-memory
+                SaveReport();
                 MessageBox.Show("Report submitted.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
+            }
+        }
+
+        private void SaveReport()
+        {
+            try
+            {
+                var report = new ReportData
+                {
+                    Location = txtLocation.Text?.Trim(),
+                    Category = cmbCategory.SelectedItem?.ToString() ?? string.Empty,
+                    Description = (rtbDescription.Text == _descriptionPlaceholder ? string.Empty : rtbDescription.Text)?.Trim(),
+                    AttachmentPath = _attachmentPath,
+                    SubmittedAt = DateTime.UtcNow
+                };
+
+                ReportRepository.Add(report);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save report in memory: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
