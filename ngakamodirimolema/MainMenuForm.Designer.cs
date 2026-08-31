@@ -1,6 +1,6 @@
 ﻿namespace ngakamodirimolema
 {
-    partial class Form1
+    partial class MainMenuForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -134,14 +134,14 @@
             Home.TabIndex = 0;
             Home.Text = "HOME";
             // 
-            // Form1
+            // MainMenuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(panelTitleBar);
             Controls.Add(sideBarPanel);
-            Name = "Form1";
+            Name = "MainMenuForm";
             Text = "Main Menu";
             sideBarPanel.ResumeLayout(false);
             panelTitleBar.ResumeLayout(false);

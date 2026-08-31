@@ -141,5 +141,10 @@ namespace ngakamodirimolema
         {
             this.Close();
         }
+
+        private void lblAttachment_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
