@@ -9,6 +9,10 @@ namespace ngakamodirimolema
     {
         private readonly string _descriptionPlaceholder = "Description";
         private string? _attachmentPath;
+        // allowed when attaching (so user can see/select Excel), but submission rules differ
+        private readonly string[] _allowedAttachmentExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx", ".xls", ".xlsx" };
+        // allowed when submitting
+        private readonly string[] _submitAllowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx" };
 
         public ReportIssuesForm()
         {
@@ -20,16 +24,24 @@ namespace ngakamodirimolema
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                var ext = Path.GetExtension(openFileDialog1.FileName)?.ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx" };
-                if (ext != null && Array.IndexOf(allowed, ext) >= 0)
+                var file = openFileDialog1.FileName;
+                if (!File.Exists(file))
                 {
-                    _attachmentPath = openFileDialog1.FileName;
+                    MessageBox.Show("Selected file does not exist.", "Attachment Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var ext = Path.GetExtension(file)?.ToLowerInvariant();
+                if (ext != null && Array.IndexOf(_allowedAttachmentExtensions, ext) >= 0)
+                {
+                    _attachmentPath = file;
                     lblAttachment.Text = Path.GetFileName(_attachmentPath);
                 }
                 else
                 {
-                    MessageBox.Show("Invalid file type. Allowed: *.jpg; *.jpeg; *.png; *.pdf; *.docx", "Invalid Attachment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"Invalid file type '{ext ?? ""}'. Allowed: *.jpg; *.jpeg; *.png; *.pdf; *.docx", "Invalid Attachment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _attachmentPath = null;
+                    lblAttachment.Text = "No file attached";
                 }
             }
         }
@@ -55,6 +67,25 @@ namespace ngakamodirimolema
 
         private void btnSubmit_Click(object sender, EventArgs e)
         {
+            // validate attachment type before submission
+
+            if (!string.IsNullOrWhiteSpace(_attachmentPath))
+            {
+                if (!File.Exists(_attachmentPath))
+                {
+                    MessageBox.Show("Attached file no longer exists.", "Attachment Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var ext = Path.GetExtension(_attachmentPath)?.ToLowerInvariant();
+                // If the attachment type is not allowed for submission, show validation
+                if (ext == null || Array.IndexOf(_submitAllowedExtensions, ext) < 0)
+                {
+                    MessageBox.Show($"Attachment type '{ext ?? ""}' is not allowed for submission. Allowed types: *.jpg, *.jpeg, *.png, *.pdf, *.docx.", "Invalid Attachment", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             btnSubmit.Enabled = false;
             btnAttach.Enabled = false;
             txtLocation.Enabled = false;
