@@ -35,12 +35,12 @@
             logoPanel = new Panel();
             panelTitleBar = new Panel();
             Home = new Label();
+            mainPanel = new Panel();
             sideBarPanel.SuspendLayout();
             panelTitleBar.SuspendLayout();
             SuspendLayout();
-            // 
+
             // btnReportIssues
-            // 
             btnReportIssues.FlatAppearance.BorderSize = 0;
             btnReportIssues.FlatStyle = FlatStyle.Flat;
             btnReportIssues.ForeColor = Color.Gainsboro;
@@ -50,11 +50,11 @@
             btnReportIssues.Size = new Size(220, 60);
             btnReportIssues.TabIndex = 0;
             btnReportIssues.Text = "Report Issues";
+            btnReportIssues.TextAlign = ContentAlignment.MiddleLeft;
             btnReportIssues.UseVisualStyleBackColor = true;
             btnReportIssues.Click += button1_Click;
-            // 
+
             // sideBarPanel
-            // 
             sideBarPanel.BackColor = Color.FromArgb(51, 51, 76);
             sideBarPanel.Controls.Add(btnLocalEvents);
             sideBarPanel.Controls.Add(btnServiceRequestStatus);
@@ -65,9 +65,9 @@
             sideBarPanel.Name = "sideBarPanel";
             sideBarPanel.Size = new Size(220, 450);
             sideBarPanel.TabIndex = 0;
-            // 
+
             // btnLocalEvents
-            // 
+            btnLocalEvents.Enabled = false;
             btnLocalEvents.FlatAppearance.BorderSize = 0;
             btnLocalEvents.FlatStyle = FlatStyle.Flat;
             btnLocalEvents.ForeColor = Color.Gainsboro;
@@ -77,11 +77,11 @@
             btnLocalEvents.Size = new Size(220, 60);
             btnLocalEvents.TabIndex = 4;
             btnLocalEvents.Text = "Local Events and Announcements";
+            btnLocalEvents.TextAlign = ContentAlignment.MiddleLeft;
             btnLocalEvents.UseVisualStyleBackColor = true;
-            btnLocalEvents.Enabled = false;
-            // 
+
             // btnServiceRequestStatus
-            // 
+            btnServiceRequestStatus.Enabled = false;
             btnServiceRequestStatus.FlatAppearance.BorderSize = 0;
             btnServiceRequestStatus.FlatStyle = FlatStyle.Flat;
             btnServiceRequestStatus.ForeColor = Color.Gainsboro;
@@ -91,11 +91,10 @@
             btnServiceRequestStatus.Size = new Size(220, 60);
             btnServiceRequestStatus.TabIndex = 3;
             btnServiceRequestStatus.Text = "Service Request Status";
+            btnServiceRequestStatus.TextAlign = ContentAlignment.MiddleLeft;
             btnServiceRequestStatus.UseVisualStyleBackColor = true;
-            btnServiceRequestStatus.Enabled = false;
-            // 
+
             // logoPanel
-            // 
             logoPanel.BackColor = Color.FromArgb(39, 39, 58);
             logoPanel.Dock = DockStyle.Top;
             logoPanel.Location = new Point(0, 0);
@@ -103,9 +102,8 @@
             logoPanel.Size = new Size(220, 80);
             logoPanel.TabIndex = 0;
             logoPanel.Paint += logoPanel_Paint;
-            // 
+
             // panelTitleBar
-            // 
             panelTitleBar.BackColor = Color.FromArgb(0, 150, 136);
             panelTitleBar.Controls.Add(Home);
             panelTitleBar.Dock = DockStyle.Top;
@@ -113,17 +111,8 @@
             panelTitleBar.Name = "panelTitleBar";
             panelTitleBar.Size = new Size(580, 80);
             panelTitleBar.TabIndex = 1;
-            // main content panel
-            mainPanel = new Panel();
-            mainPanel.Dock = DockStyle.Fill;
-            mainPanel.Location = new Point(220, 80);
-            mainPanel.Name = "mainPanel";
-            mainPanel.Size = new Size(580, 370);
-            mainPanel.TabIndex = 2;
-            Controls.Add(mainPanel);
-            // 
+
             // Home
-            // 
             Home.Anchor = AnchorStyles.None;
             Home.AutoSize = true;
             Home.Font = new Font("Calibri", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -133,12 +122,19 @@
             Home.Size = new Size(67, 26);
             Home.TabIndex = 0;
             Home.Text = "HOME";
-            // 
+
+            // mainPanel
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.Location = new Point(220, 80);
+            mainPanel.Name = "mainPanel";
+            mainPanel.Size = new Size(580, 370);
+            mainPanel.TabIndex = 2;
+
             // MainMenuForm
-            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(mainPanel);
             Controls.Add(panelTitleBar);
             Controls.Add(sideBarPanel);
             Name = "MainMenuForm";
