@@ -161,7 +161,8 @@ namespace ngakamodirimolema
             // 
             // openFileDialog1
             // 
-            openFileDialog1.Filter = "Allowed files|*.jpg;*.jpeg;*.png;*.pdf;*.docx";
+            // include Excel in the dialog so users can see/select it, but Excel will be rejected on submit
+            openFileDialog1.Filter = "Images and Documents|*.jpg;*.jpeg;*.png;*.pdf;*.docx;*.xls;*.xlsx|All files|*.*";
             // 
             // timerSubmission
             // 
