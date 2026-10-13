@@ -1,6 +1,9 @@
 using System;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace ngakamodirimolema
@@ -16,12 +19,219 @@ namespace ngakamodirimolema
         public LocalEventsForm()
         {
             InitializeComponent();
+            // apply visual styling before control population
+            ApplyModernStyling();
             _recommendationService = new RecommendationService(SharedHistory);
             _localQueue = EventRepository.GetUpcomingQueueSnapshot();
             InitializeControls();
             LoadAllEvents();
             UpdateRecommendations();
             UpdateDataStructureInfo();
+        }
+
+        // ApplyModernStyling: centralises UI visual tweaks to keep Designer changes minimal
+        private void ApplyModernStyling()
+        {
+            // reuse app colours from MainMenuForm
+            var sidebarColor = Color.FromArgb(51, 51, 76);
+            var teal = Color.FromArgb(0, 150, 136);
+
+            // DataGridView base styling
+            dgvEvents.BackgroundColor = Color.White;
+            dgvEvents.BorderStyle = BorderStyle.None;
+            dgvEvents.EnableHeadersVisualStyles = false;
+            dgvEvents.RowHeadersVisible = false;
+            dgvEvents.AllowUserToResizeRows = false;
+            dgvEvents.ReadOnly = true;
+            dgvEvents.MultiSelect = false;
+            dgvEvents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvEvents.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvEvents.GridColor = Color.FromArgb(230, 230, 230);
+            dgvEvents.RowTemplate.Height = 36;
+            dgvEvents.RowTemplate.DefaultCellStyle.Padding = new Padding(8, 0, 8, 0);
+            dgvEvents.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 250, 250);
+            dgvEvents.ColumnHeadersDefaultCellStyle.BackColor = teal;
+            dgvEvents.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvEvents.ColumnHeadersDefaultCellStyle.Font = new Font(dgvEvents.Font, FontStyle.Bold);
+            dgvEvents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+            // selection color - soft teal
+            var selStyle = new DataGridViewCellStyle();
+            selStyle.BackColor = Color.FromArgb(200, 240, 235);
+            selStyle.ForeColor = Color.Black;
+            dgvEvents.DefaultCellStyle.SelectionBackColor = selStyle.BackColor;
+            dgvEvents.DefaultCellStyle.SelectionForeColor = selStyle.ForeColor;
+
+            // owner-draw recommendations list (keeps the control name)
+            lstRecommendations.DrawMode = DrawMode.OwnerDrawVariable;
+            lstRecommendations.MeasureItem += LstRecommendations_MeasureItem;
+            lstRecommendations.DrawItem += LstRecommendations_DrawItem;
+
+            // double-buffer the grid to reduce flicker (uses protected property)
+            try
+            {
+                typeof(DataGridView).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(dgvEvents, true, null);
+            }
+            catch { /* ignore if not allowed */ }
+
+            // databinding complete toggles empty state overlay and adjusts columns
+            dgvEvents.DataBindingComplete += DgvEvents_DataBindingComplete;
+            dgvEvents.CellFormatting += DgvEvents_CellFormatting;
+
+            // style buttons consistently
+            StyleButtonPrimary(btnSearch, teal, Color.White);
+            StyleButtonSecondary(btnClear, teal);
+            StyleButtonNeutral(btnPrevSearch);
+            StyleButtonNeutral(btnEnqueue);
+            StyleButtonNeutral(btnDequeue);
+            StyleButtonPrimary(btnProcessPriority, Color.FromArgb(32, 120, 180), Color.White);
+
+            // search AcceptButton
+            AcceptButton = btnSearch;
+        }
+
+        // Button styling helpers
+        private void StyleButtonPrimary(Button btn, Color back, Color fore)
+        {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = back;
+            btn.ForeColor = fore;
+            btn.Height = 36;
+            btn.Cursor = Cursors.Hand;
+            btn.Padding = new Padding(8, 0, 8, 0);
+            // simple hover effect
+            btn.MouseEnter += (s, e) => btn.BackColor = ControlPaint.Light(back);
+            btn.MouseLeave += (s, e) => btn.BackColor = back;
+        }
+
+        private void StyleButtonSecondary(Button btn, Color accent)
+        {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 1;
+            btn.FlatAppearance.BorderColor = accent;
+            btn.BackColor = Color.White;
+            btn.ForeColor = accent;
+            btn.Height = 36;
+            btn.Cursor = Cursors.Hand;
+            btn.Padding = new Padding(8, 0, 8, 0);
+            btn.MouseEnter += (s, e) => btn.BackColor = Color.FromArgb(245, 245, 245);
+            btn.MouseLeave += (s, e) => btn.BackColor = Color.White;
+        }
+
+        private void StyleButtonNeutral(Button btn)
+        {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = Color.FromArgb(240, 240, 240);
+            btn.ForeColor = Color.Black;
+            btn.Height = 34;
+            btn.Cursor = Cursors.Hand;
+            btn.Padding = new Padding(8, 0, 8, 0);
+            btn.MouseEnter += (s, e) => btn.BackColor = Color.FromArgb(230, 230, 230);
+            btn.MouseLeave += (s, e) => btn.BackColor = Color.FromArgb(240, 240, 240);
+        }
+
+        // Toggle empty state and adjust column fill weights
+        private void DgvEvents_DataBindingComplete(object? sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            try
+            {
+                var count = dgvEvents.Rows.Cast<DataGridViewRow>().Count(r => !r.IsNewRow);
+                // show overlay label when empty
+                if (count == 0)
+                {
+                    lblEmptyState.Text = "No events match your search. Try changing or clearing your filters.";
+                    lblEmptyState.Visible = true;
+                }
+                else
+                {
+                    lblEmptyState.Visible = false;
+                }
+
+                // ensure sensible column sizing
+                if (dgvEvents.Columns.Count > 0)
+                {
+                    foreach (DataGridViewColumn col in dgvEvents.Columns) col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    // assign fill weights
+                    if (dgvEvents.Columns.Contains("Title")) dgvEvents.Columns["Title"].FillWeight = 45;
+                    if (dgvEvents.Columns.Contains("Date")) dgvEvents.Columns["Date"].FillWeight = 12;
+                    if (dgvEvents.Columns.Contains("Category")) dgvEvents.Columns["Category"].FillWeight = 12;
+                    if (dgvEvents.Columns.Contains("Location")) dgvEvents.Columns["Location"].FillWeight = 18;
+                    if (dgvEvents.Columns.Contains("Type")) dgvEvents.Columns["Type"].FillWeight = 8;
+                    if (dgvEvents.Columns.Contains("Priority")) dgvEvents.Columns["Priority"].FillWeight = 8;
+                }
+            }
+            catch { }
+        }
+
+        // CellFormatting for priority and type colouring
+        private void DgvEvents_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                var colName = dgvEvents.Columns[e.ColumnIndex].Name;
+                if (colName == "Priority" && e.Value != null)
+                {
+                    var s = e.Value.ToString();
+                    if (s == "High") e.CellStyle.ForeColor = Color.FromArgb(200, 50, 50);
+                    else if (s == "Medium") e.CellStyle.ForeColor = Color.FromArgb(200, 130, 30);
+                    else if (s == "Low") e.CellStyle.ForeColor = Color.FromArgb(30, 130, 60);
+                }
+                if (colName == "Type" && e.Value != null)
+                {
+                    var s = e.Value.ToString();
+                    if (s == "Announcement") e.CellStyle.ForeColor = Color.FromArgb(90, 90, 90);
+                }
+            }
+            catch { }
+        }
+
+        // Owner-draw recommendations list items as cards
+        private void LstRecommendations_MeasureItem(object? sender, MeasureItemEventArgs e)
+        {
+            e.ItemHeight = 56;
+        }
+
+        private void LstRecommendations_DrawItem(object? sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            if (e.Index < 0) return;
+
+            var g = e.Graphics;
+            var recs = lstRecommendations.Tag as List<Recommendation>;
+
+            string title = lstRecommendations.Items[e.Index]?.ToString() ?? string.Empty;
+            string reason = string.Empty;
+            string meta = string.Empty;
+
+            if (recs != null && e.Index < recs.Count)
+            {
+                var r = recs[e.Index];
+                title = r.Event.Title;
+                meta = $"{r.Event.Category} • {r.Event.EventDate:dd/MM/yyyy} • {r.Event.Location}";
+                reason = r.Reason;
+            }
+            else
+            {
+                // fallback to existing item text
+                meta = string.Empty;
+            }
+
+            var rect = e.Bounds;
+            var titleFont = new Font(Font.FontFamily, Font.Size, FontStyle.Bold);
+            var metaFont = new Font(Font.FontFamily, Font.Size - 1, FontStyle.Regular);
+            var reasonFont = new Font(Font.FontFamily, Font.Size - 1, FontStyle.Italic);
+
+            using (titleFont)
+            using (metaFont)
+            using (reasonFont)
+            using (var brush = new SolidBrush(e.ForeColor))
+            {
+                g.DrawString(title, titleFont, brush, rect.Left + 6, rect.Top + 4);
+                g.DrawString(meta, metaFont, new SolidBrush(Color.Gray), rect.Left + 6, rect.Top + 22);
+                if (!string.IsNullOrWhiteSpace(reason)) g.DrawString(reason, reasonFont, new SolidBrush(Color.DarkGray), rect.Left + 6, rect.Top + 38);
+            }
         }
 
         private void InitializeControls()
@@ -61,7 +271,7 @@ namespace ngakamodirimolema
                 e.Id,
                 e.Title,
                 e.Category,
-                EventDate = e.EventDate.ToString("yyyy-MM-dd"),
+                EventDate = e.EventDate.ToString("dd/MM/yyyy"),
                 e.Location,
                 Type = e.Type.ToString(),
                 Priority = e.Priority.ToString()
@@ -90,7 +300,7 @@ namespace ngakamodirimolema
                 e.Id,
                 e.Title,
                 e.Category,
-                EventDate = e.EventDate.ToString("yyyy-MM-dd"),
+                EventDate = e.EventDate.ToString("dd/MM/yyyy"),
                 e.Location,
                 Type = e.Type.ToString(),
                 Priority = e.Priority.ToString()
@@ -201,7 +411,7 @@ namespace ngakamodirimolema
 
             foreach (var r in recs)
             {
-                var s = $"{r.Event.Title} - {r.Event.Category} - {r.Event.EventDate:d}";
+                var s = $"{r.Event.Title} - {r.Event.Category} - {r.Event.EventDate:dd/MM/yyyy} - {r.Event.Location}";
                 lstRecommendations.Items.Add(s);
             }
 
