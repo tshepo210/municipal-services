@@ -20,6 +20,8 @@ C:\repos\municipal-services\ngakamodirimolema\bin\Debug\net8.0-windows\ngakamodi
 C:\repos\municipal-services\ngakamodirimolema\bin\Debug\net8.0-windows\ngakamodirimolema.dll
 C:\repos\municipal-services\ngakamodirimolema\bin\Debug\net8.0-windows\ngakamodirimolema.pdb
 C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.Form1.resources
+C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.MainMenuForm.resources
+C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.ReportIssuesForm.resources
 C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.csproj.GenerateResource.cache
 C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.GeneratedMSBuildEditorConfig.editorconfig
 C:\repos\municipal-services\ngakamodirimolema\obj\Debug\net8.0-windows\ngakamodirimolema.AssemblyInfoInputs.cache
