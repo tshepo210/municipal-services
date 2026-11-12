@@ -89,7 +89,7 @@ namespace ngakamodirimolema
             btnLocalEvents.UseVisualStyleBackColor = true;
 
             // btnServiceRequestStatus
-            btnServiceRequestStatus.Enabled = false;
+            btnServiceRequestStatus.Enabled = true;
             btnServiceRequestStatus.FlatAppearance.BorderSize = 0;
             btnServiceRequestStatus.FlatStyle = FlatStyle.Flat;
             btnServiceRequestStatus.ForeColor = Color.Gainsboro;

@@ -9,6 +9,7 @@ namespace ngakamodirimolema
     {
         private readonly string _descriptionPlaceholder = "Description";
         private string? _attachmentPath;
+        private string? _lastRequestId;
         // allowed when attaching (so user can see/select Excel), but submission rules differ
         private readonly string[] _allowedAttachmentExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf", ".docx", ".xls", ".xlsx" };
         // allowed when submitting
@@ -142,7 +143,7 @@ namespace ngakamodirimolema
                 timerSubmission.Stop();
                 // save the report in-memory
                 SaveReport();
-                MessageBox.Show("Report submitted.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Report submitted. Your service request ID is {_lastRequestId}.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }
         }
@@ -161,6 +162,14 @@ namespace ngakamodirimolema
                 };
 
                 ReportRepository.Add(report);
+                var request = ServiceRequestRepository.Service.Add(
+                    string.IsNullOrWhiteSpace(report.Category) ? "Community service report" : report.Category + " service report",
+                    report.Description ?? string.Empty,
+                    report.Category ?? "Other",
+                    report.Location ?? string.Empty,
+                    report.AttachmentPath ?? string.Empty);
+                report.RequestId = request.RequestId;
+                _lastRequestId = request.RequestId;
             }
             catch (Exception ex)
             {

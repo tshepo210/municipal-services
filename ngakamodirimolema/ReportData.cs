@@ -9,5 +9,6 @@ namespace ngakamodirimolema
         public string? Description { get; set; }
         public string? AttachmentPath { get; set; }
         public DateTime SubmittedAt { get; set; }
+        public string? RequestId { get; set; }
     }
 }
